@@ -88,12 +88,18 @@ router.post("/newpassword",(req,res)=>{
                 if(!rs){
                     return res.status(400).send({output:`Usuário ou senha incorreto`})
                 }
-                Cliente.findByIdAndUpdate(result.id,senha = newPassword,{new:true}).then((result)=>{
-                    if(!result){
-                        res.status(400).send({output:`Não foi possível localizar`})
+                bcrypt.hash(newPassword,config.bcrypt_salt,(err,cripto)=>{
+                    if(err){
+                        return res.status(500).send({output:`Erro ao processar o cadastro`,error:err})
                     }
-                    res.status(200).send({ouptut:`Atualizado`,payload:result})
-                }).catch((error)=>res.status(500).send({output:`Erro ao tentar atualizar`,erro:error}))
+                    result.senha = cripto
+                    Cliente.findByIdAndUpdate(result.id, result,{new:true}).then((result)=>{
+                        if(!result){
+                            res.status(400).send({output:`Não foi possível localizar`})
+                        }
+                        res.status(200).send({ouptut:`Atualizado`,payload:result})
+                    }).catch((error)=>res.status(500).send({output:`Erro ao tentar atualizar`,erro:error}))
+                })
             })
             .catch((error)=>res.status(500).send({output:`Erro ao processar dados -> ${error}`}))
         }).catch((err)=>res.status(500).send({output:`Erro ao processar o login -> ${err}`}))
