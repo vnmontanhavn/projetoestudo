@@ -15,7 +15,7 @@ app.use(cors())
 app.use(helmet())
 app.use(morgan("combined"))
 
-app.use("/api/v1/usuarios",router);
+app.use("/api/v1/aplicacao",router);
 
 
 app.listen(3000,()=>console.log("Servidor online, em http://localhost:3000"))
